@@ -251,6 +251,42 @@ section{padding:6rem 0}
 .inv-expand-btn:hover:not(:disabled){background:var(--Y3)}
 .inv-expand-btn:disabled{background:var(--G4);color:var(--G2);cursor:not-allowed}
 
+/* click hint on preview stage */
+.inv-prev-stage:not(.no-sel){cursor:pointer}
+.inv-prev-stage:not(.no-sel):hover .inv-bracket{box-shadow:0 0 10px rgba(194,254,11,.5)}
+.inv-click-hint{position:absolute;bottom:12px;left:50%;transform:translateX(-50%);font-family:var(--fmo);font-size:8px;letter-spacing:.2em;color:var(--Y);text-transform:uppercase;opacity:0;transition:opacity .2s;z-index:6;pointer-events:none;white-space:nowrap;background:rgba(0,0,0,.7);padding:4px 10px;border:1px solid rgba(194,254,11,.3)}
+.inv-prev-stage:not(.no-sel):hover .inv-click-hint{opacity:1}
+
+/* floating preview panel */
+.fpv-backdrop{position:fixed;inset:0;z-index:8000;background:rgba(0,0,0,.8);display:flex;align-items:center;justify-content:center;padding:2rem;animation:fpv-in .18s ease}
+@keyframes fpv-in{from{opacity:0}to{opacity:1}}
+.fpv-panel{width:min(900px,92vw);max-height:90vh;display:flex;flex-direction:column;border:2px solid var(--Y);background:var(--BK2);position:relative;animation:fpv-rise .22s cubic-bezier(.22,1,.36,1)}
+@keyframes fpv-rise{from{transform:translateY(28px) scale(.97);opacity:0}to{transform:translateY(0) scale(1);opacity:1}}
+.fpv-panel::before{content:'';position:absolute;top:-1px;left:-1px;right:-1px;height:3px;background:var(--Y);z-index:1}
+.fpv-head{display:flex;align-items:center;justify-content:space-between;padding:12px 18px;background:var(--BK4);border-bottom:2px solid var(--G2);flex-shrink:0}
+.fpv-head-l{display:flex;align-items:center;gap:10px;font-family:var(--fmo);font-size:9px;color:var(--Y);letter-spacing:.2em;text-transform:uppercase}
+.fpv-head-r{display:flex;align-items:center;gap:8px}
+.fpv-btn{font-family:var(--fmo);font-size:9px;letter-spacing:.18em;text-transform:uppercase;border:1px solid var(--G3);background:transparent;color:var(--G);padding:6px 14px;cursor:pointer;transition:all .15s}
+.fpv-btn:hover{color:var(--Y);border-color:var(--Y)}
+.fpv-btn.full{background:var(--Y);color:var(--BK);border-color:var(--Y)}
+.fpv-btn.full:hover{background:var(--Y3)}
+.fpv-stage{position:relative;flex:1;overflow:hidden;background:radial-gradient(ellipse at center,var(--BK3) 0%,var(--BK) 80%);min-height:420px;display:flex;align-items:center;justify-content:center}
+.fpv-stage::before{content:'';position:absolute;inset:0;background-image:linear-gradient(rgba(194,254,11,.04) 1px,transparent 1px),linear-gradient(90deg,rgba(194,254,11,.04) 1px,transparent 1px);background-size:24px 24px;pointer-events:none}
+.fpv-stage img{max-width:100%;max-height:100%;object-fit:contain;display:block;position:relative;z-index:1;filter:saturate(.88) contrast(1.06)}
+/* scanlines on floating panel */
+.fpv-stage::after{content:'';position:absolute;inset:0;background:repeating-linear-gradient(0deg,transparent 0,transparent 2px,rgba(0,0,0,.18) 2px,rgba(0,0,0,.18) 3px);pointer-events:none;z-index:2}
+.fpv-brk{position:absolute;width:16px;height:16px;z-index:4;pointer-events:none}
+.fpv-brk-tl{top:10px;left:10px;border-top:2px solid var(--Y);border-left:2px solid var(--Y)}
+.fpv-brk-tr{top:10px;right:10px;border-top:2px solid var(--Y);border-right:2px solid var(--Y)}
+.fpv-brk-bl{bottom:10px;left:10px;border-bottom:2px solid var(--Y);border-left:2px solid var(--Y)}
+.fpv-brk-br{bottom:10px;right:10px;border-bottom:2px solid var(--Y);border-right:2px solid var(--Y)}
+.fpv-meta{display:grid;grid-template-columns:1fr 1fr;border-top:1px solid var(--G3);background:var(--BK3);flex-shrink:0}
+.fpv-meta-item{padding:9px 16px;border-right:1px solid var(--G4);border-bottom:1px solid var(--G4);font-family:var(--fmo);font-size:9px;letter-spacing:.1em;text-transform:uppercase;display:flex;gap:10px;align-items:center}
+.fpv-meta-item:nth-child(even){border-right:none}
+.fpv-meta-item:nth-last-child(-n+2){border-bottom:none}
+.fpv-ml{color:var(--G2);flex-shrink:0}
+.fpv-mv{color:var(--W);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+
 /* GLITCH IMAGE EFFECT */
 .g-img{position:relative;overflow:hidden;width:100%;height:100%}
 .g-img img{display:block;width:100%;height:100%;object-fit:cover;filter:saturate(.85) contrast(1.07) brightness(.92)}
@@ -613,6 +649,7 @@ footer{background:var(--BK2);border-top:2px solid var(--Y);display:flex;align-it
             <span class="iph-r" id="invPrevId">———</span>
           </div>
           <div class="inv-prev-stage no-sel" id="invPrevStage">
+            <span class="inv-click-hint">CLICK TO FLOAT</span>
             <div class="inv-prev-empty" id="invPrevEmpty">
               <svg width="56" height="56" viewBox="0 0 56 56" fill="none">
                 <rect x="6" y="6" width="44" height="44" stroke="currentColor" stroke-width="1.5" stroke-dasharray="4 3"/>
@@ -1132,9 +1169,86 @@ function selectInv(idx){
   if(activeRow)activeRow.scrollIntoView({block:'nearest',behavior:'smooth'});
 }
 
-document.getElementById('invExpand').addEventListener('click',()=>{
-  if(selectedIdx>=0)openLb(selectedIdx);
-});
+// ── FLOATING PREVIEW PANEL ──
+(function(){
+  function openFPV(idx){
+    if(idx<0||idx>=portfolio.length)return;
+    const p=portfolio[idx];
+
+    const bd=document.createElement('div');
+    bd.className='fpv-backdrop';
+    bd.id='fpvBackdrop';
+
+    // pseudo checksum
+    let h=0;for(const c of p.name)h=(h*31+c.charCodeAt(0))|0;
+    const cks='0x'+('00000000'+(h>>>0).toString(16)).slice(-8).toUpperCase();
+
+    bd.innerHTML=
+      '<div class="fpv-panel">'+
+        '<div class="fpv-head">'+
+          '<div class="fpv-head-l">'+
+            '<span style="width:8px;height:8px;background:var(--Y);clip-path:polygon(50% 0%,100% 100%,0% 100%);display:inline-block"></span>'+
+            '<span>// PREVIEW // '+p.name+'</span>'+
+          '</div>'+
+          '<div class="fpv-head-r">'+
+            '<button class="fpv-btn" id="fpvPrev">&#8592; PREV</button>'+
+            '<button class="fpv-btn" id="fpvNext">NEXT &#8594;</button>'+
+            '<button class="fpv-btn full" id="fpvFull">&#9635; FULLSCREEN</button>'+
+            '<button class="fpv-btn" id="fpvClose">ESC // CLOSE</button>'+
+          '</div>'+
+        '</div>'+
+        '<div class="fpv-stage">'+
+          '<img id="fpvImg" src="'+p.src+'" alt="'+p.name+'">'+
+          '<div class="fpv-brk fpv-brk-tl"></div>'+
+          '<div class="fpv-brk fpv-brk-tr"></div>'+
+          '<div class="fpv-brk fpv-brk-bl"></div>'+
+          '<div class="fpv-brk fpv-brk-br"></div>'+
+        '</div>'+
+        '<div class="fpv-meta">'+
+          '<div class="fpv-meta-item"><span class="fpv-ml">// NAME</span><span class="fpv-mv" id="fpvName">'+p.name+'</span></div>'+
+          '<div class="fpv-meta-item"><span class="fpv-ml">// CATEGORY</span><span class="fpv-mv">'+p.cat.toUpperCase()+'</span></div>'+
+          '<div class="fpv-meta-item"><span class="fpv-ml">// SIZE</span><span class="fpv-mv" id="fpvSize">'+(p.size?fmtSize(p.size):'—')+'</span></div>'+
+          '<div class="fpv-meta-item"><span class="fpv-ml">// CHECKSUM</span><span class="fpv-mv">'+cks+'</span></div>'+
+        '</div>'+
+      '</div>';
+
+    document.body.appendChild(bd);
+
+    var curIdx=idx;
+
+    function navFPV(d){
+      curIdx=(curIdx+d+portfolio.length)%portfolio.length;
+      const np=portfolio[curIdx];
+      document.getElementById('fpvImg').src=np.src;
+      document.getElementById('fpvName').textContent=np.name;
+      // update checksum
+      let h2=0;for(const c of np.name)h2=(h2*31+c.charCodeAt(0))|0;
+    }
+
+    document.getElementById('fpvClose').onclick=closeFPV;
+    document.getElementById('fpvFull').onclick=function(){closeFPV();openLb(curIdx);};
+    document.getElementById('fpvPrev').onclick=function(){navFPV(-1);};
+    document.getElementById('fpvNext').onclick=function(){navFPV(1);};
+    bd.addEventListener('click',function(e){if(e.target===bd)closeFPV();});
+  }
+
+  function closeFPV(){
+    var el=document.getElementById('fpvBackdrop');
+    if(el)el.remove();
+  }
+
+  // open on preview stage click
+  document.getElementById('invPrevStage').addEventListener('click',function(){
+    if(selectedIdx>=0)openFPV(selectedIdx);
+  });
+
+  // ESC closes floating panel (if lightbox not open)
+  document.addEventListener('keydown',function(e){
+    if(e.key==='Escape'&&document.getElementById('fpvBackdrop')){
+      if(!document.getElementById('lbox').classList.contains('open'))closeFPV();
+    }
+  });
+})();
 
 document.querySelectorAll('.fbtn').forEach(b=>{
   b.addEventListener('click',()=>{
@@ -1325,6 +1439,10 @@ setTimeout(()=>showObjective(),9000);
 
 // initial render
 render();
+
+document.getElementById('invExpand').addEventListener('click',()=>{
+  if(selectedIdx>=0)openLb(selectedIdx);
+});
 </script>
 </body>
 </html>
