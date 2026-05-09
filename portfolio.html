@@ -184,25 +184,37 @@ section{padding:6rem 0}
 
 /* LIST */
 .inv-list{border-right:2px solid var(--G2);background:var(--BK2);display:flex;flex-direction:column;position:relative;max-height:600px}
-.inv-list-head{display:grid;grid-template-columns:50px 1fr 60px 70px;gap:10px;padding:10px 14px;background:var(--BK4);border-bottom:1px solid var(--G3);font-family:var(--fmo);font-size:8px;color:var(--G);letter-spacing:.22em;text-transform:uppercase}
-.inv-list-head span:nth-child(3),.inv-list-head span:nth-child(4){text-align:right}
+.inv-list-head{display:flex;align-items:center;gap:10px;padding:10px 14px;background:var(--BK4);border-bottom:2px solid var(--G2);font-family:var(--fmo);font-size:8px;color:var(--G);letter-spacing:.22em;text-transform:uppercase}
+.inv-list-head .ilh-count{margin-left:auto;color:var(--Y)}
 .inv-list-body{flex:1;overflow-y:auto;scrollbar-width:thin;scrollbar-color:var(--Y) var(--BK3)}
-.inv-list-body::-webkit-scrollbar{width:6px}
+.inv-list-body::-webkit-scrollbar{width:5px}
 .inv-list-body::-webkit-scrollbar-track{background:var(--BK3)}
 .inv-list-body::-webkit-scrollbar-thumb{background:var(--Y2)}
 .inv-list-body::-webkit-scrollbar-thumb:hover{background:var(--Y)}
-
-.inv-row{display:grid;grid-template-columns:50px 1fr 60px 70px;gap:10px;padding:11px 14px;border-bottom:1px solid var(--G4);font-family:var(--fmo);font-size:10px;color:var(--G);cursor:pointer;transition:background .12s,color .12s;position:relative;align-items:center}
-.inv-row:hover{background:rgba(194,254,11,0.05);color:var(--W)}
-.inv-row.active{background:rgba(194,254,11,0.11);color:var(--Y)}
-.inv-row.active::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--Y)}
-.inv-cell-id{color:var(--G2);letter-spacing:.12em;font-size:9px}
-.inv-row:hover .inv-cell-id,.inv-row.active .inv-cell-id{color:var(--Y)}
-.inv-cell-name{letter-spacing:.04em;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;text-transform:uppercase}
-.inv-cell-cat{font-size:8px;letter-spacing:.14em;color:var(--Y);text-align:right;font-weight:700}
-.inv-cell-cat.cat-vfx,.inv-cell-cat.cat-other{color:var(--C)}
-.inv-cell-size{font-size:8px;color:var(--G2);text-align:right;font-feature-settings:"tnum"}
-
+.inv-row{display:flex;align-items:center;gap:12px;padding:10px 14px;border-bottom:1px solid var(--G4);cursor:pointer;transition:background .12s;position:relative;overflow:hidden}
+.inv-row::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:transparent;transition:background .12s}
+.inv-row:hover{background:rgba(255,255,255,.03)}
+.inv-row:hover::before{background:var(--G2)}
+.inv-row.active{background:rgba(194,254,11,.08)}
+.inv-row.active::before{background:var(--Y)}
+.inv-thumb{width:48px;height:48px;flex-shrink:0;overflow:hidden;border:1px solid var(--G3);background:var(--BK3);position:relative}
+.inv-thumb img{width:100%;height:100%;object-fit:cover;display:block;filter:saturate(.6) brightness(.75);transition:filter .2s}
+.inv-row:hover .inv-thumb img,.inv-row.active .inv-thumb img{filter:saturate(1) brightness(1)}
+.inv-thumb-ph{width:100%;height:100%;display:flex;align-items:center;justify-content:center;color:var(--G3)}
+.inv-info{flex:1;min-width:0;display:flex;flex-direction:column;gap:5px}
+.inv-info-top{display:flex;align-items:baseline;gap:7px}
+.inv-cell-id{font-family:var(--fmo);font-size:8px;color:var(--G2);letter-spacing:.1em;flex-shrink:0}
+.inv-row.active .inv-cell-id{color:var(--Y)}
+.inv-cell-name{font-family:var(--fm);font-size:13px;font-weight:700;letter-spacing:.03em;color:var(--W);text-transform:uppercase;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.inv-row.active .inv-cell-name{color:var(--Y)}
+.inv-info-bot{display:flex;align-items:center;gap:6px}
+.inv-cell-cat{font-family:var(--fmo);font-size:7px;letter-spacing:.16em;font-weight:700;padding:2px 7px;border:1px solid;text-transform:uppercase;flex-shrink:0}
+.inv-cell-cat.cat-environment{color:#4dff91;border-color:rgba(77,255,145,.35);background:rgba(77,255,145,.07)}
+.inv-cell-cat.cat-character{color:var(--Y);border-color:rgba(194,254,11,.35);background:rgba(194,254,11,.07)}
+.inv-cell-cat.cat-vfx{color:var(--C);border-color:rgba(1,255,255,.35);background:rgba(1,255,255,.07)}
+.inv-cell-cat.cat-prop{color:#ff9f43;border-color:rgba(255,159,67,.35);background:rgba(255,159,67,.07)}
+.inv-cell-cat.cat-other{color:var(--G);border-color:var(--G3);background:transparent}
+.inv-cell-size{font-family:var(--fmo);font-size:8px;color:var(--G2);letter-spacing:.08em;margin-left:auto;flex-shrink:0}
 .inv-empty{padding:5rem 2rem;text-align:center;font-family:var(--fmo);font-size:10px;color:var(--G2);letter-spacing:.15em;line-height:2.4}
 
 /* PREVIEW PANE */
@@ -586,10 +598,8 @@ footer{background:var(--BK2);border-top:2px solid var(--Y);display:flex;align-it
         <!-- LEFT: file list -->
         <div class="inv-list">
           <div class="inv-list-head">
-            <span>IDX</span>
-            <span>FILENAME</span>
-            <span>TYPE</span>
-            <span>SIZE</span>
+            <span>// RENDERS</span>
+            <span class="ilh-count" id="invCount">000 FILES</span>
           </div>
           <div class="inv-list-body" id="invList">
             <div class="inv-empty" id="invEmpty">NO FILES IN ARCHIVE<br><span style="color:var(--G3)">UPLOAD RENDERS TO POPULATE</span></div>
@@ -1010,30 +1020,53 @@ function render(){
   const items=filter==='all'?portfolio:portfolio.filter(p=>p.cat===filter);
 
   list.querySelectorAll('.inv-row').forEach(e=>e.remove());
-  document.getElementById('invCount').textContent=String(portfolio.length).padStart(3,'0')+' FILES';
+  const countEl=document.getElementById('invCount');
+  if(countEl)countEl.textContent=String(portfolio.length).padStart(3,'0')+' FILES';
 
   if(!items.length){
     empty.style.display='block';
     empty.innerHTML=portfolio.length?
       'NO FILES MATCH FILTER<br><span style="color:var(--G3)">TRY A DIFFERENT CATEGORY</span>':
-      (_dh?'FOLDER EMPTY':'NO FILES IN ARCHIVE')+'<br><span style="color:var(--G3)">'+(_dh?'ADD IMAGES TO LINKED FOLDER':'LINK A FOLDER TO POPULATE')+'</span>';
+      'NO FILES IN ARCHIVE<br><span style="color:var(--G3)">UPLOAD RENDERS TO POPULATE</span>';
     if(!portfolio.length)selectInv(-1);
     return;
   }
   empty.style.display='none';
+
+  // clean display name: strip timestamps like "2026 02 14 045634" or "SCREENSHOT "
+  function cleanName(raw){
+    return raw
+      .replace(/^SCREENSHOT\s*/i,'')
+      .replace(/^\d{4}[\s\-_]\d{2}[\s\-_]\d{2}[\s\-_]\d+\s*/,'')
+      .replace(/[\s\-_]+/g,' ')
+      .trim()||raw;
+  }
 
   items.forEach((item)=>{
     const gi=portfolio.indexOf(item);
     const row=document.createElement('div');
     row.className='inv-row'+(selectedIdx===gi?' active':'');
     row.dataset.gi=gi;
-    const cat=CAT_SHORT[item.cat]||'OTH';
-    const sizeStr=item.size?fmtSize(item.size):((gi*1.7+4.2)%24+6).toFixed(1)+'MB';
+    const catFull={environment:'ENVIRON',character:'CHAR',vfx:'VFX',prop:'PROP',other:'OTHER'}[item.cat]||'OTHER';
+    const sizeStr=item.size?fmtSize(item.size):'—';
+    const displayName=cleanName(item.name);
     row.innerHTML=`
-      <span class="inv-cell-id">${String(gi+1).padStart(3,'0')}</span>
-      <span class="inv-cell-name">${item.name}.RNDR</span>
-      <span class="inv-cell-cat cat-${item.cat}">${cat}</span>
-      <span class="inv-cell-size">${sizeStr}</span>
+      <div class="inv-thumb">
+        ${item.src
+          ? `<img src="${item.src}" alt="" loading="lazy">`
+          : `<div class="inv-thumb-ph"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><rect x="1" y="1" width="14" height="14" stroke="currentColor" stroke-width="1"/><path d="M1 11l4-4 3 3 3-4 4 5" stroke="currentColor" stroke-width="1" fill="none"/></svg></div>`
+        }
+      </div>
+      <div class="inv-info">
+        <div class="inv-info-top">
+          <span class="inv-cell-id">#${String(gi+1).padStart(3,'0')}</span>
+          <span class="inv-cell-name">${displayName}</span>
+        </div>
+        <div class="inv-info-bot">
+          <span class="inv-cell-cat cat-${item.cat}">${catFull}</span>
+          <span class="inv-cell-size">${sizeStr}</span>
+        </div>
+      </div>
     `;
     row.addEventListener('click',()=>selectInv(gi));
     row.addEventListener('dblclick',()=>{selectInv(gi);openLb(gi);});
