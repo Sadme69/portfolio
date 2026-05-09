@@ -116,4 +116,5 @@ if __name__ == '__main__':
     print(f'  Open: http://localhost:{PORT}')
     print(f'  Images folder: {os.path.abspath(RENDERS_DIR)}')
     print('='*52)
-    app.run(host='0.0.0.0', port=PORT, debug=False)
+    port = int(os.environ.get('PORT', PORT))
+    app.run(host='0.0.0.0', port=port, debug=False)
